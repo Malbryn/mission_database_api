@@ -13,13 +13,27 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String
+  username  String   @unique
   password  String
   createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+model Mission {
+  id    Int    @id @default(autoincrement())
+  name  String
+  map   Map    @relation(fields: [mapId], references: [id])
+  mapId Int
+
+  @@map("missions")
 }
 
 model Map {
-  id        Int    @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   worldName String
+  missions  Mission[]
+
+  @@map("maps")
 }
