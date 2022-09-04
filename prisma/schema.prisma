@@ -2,38 +2,118 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
+    id          Int           @id @default(autoincrement())
+    username    String        @unique @db.VarChar(32)
+    password    String
+    createdAt   DateTime      @default(now())
+    isMember    Boolean       @default(true)
+    isCreator   Boolean       @default(false)
+    isStaff     Boolean       @default(false)
+    isAdmin     Boolean       @default(false)
+    Mission     Mission[]
+    MissionFile MissionFile[]
 
-  @@map("users")
-}
-
-model Mission {
-  id    Int    @id @default(autoincrement())
-  name  String
-  map   Map    @relation(fields: [mapId], references: [id])
-  mapId Int
-
-  @@map("missions")
+    @@map("users")
 }
 
 model Map {
-  id        Int       @id @default(autoincrement())
-  name      String
-  worldName String
-  missions  Mission[]
+    id        Int       @id @default(autoincrement())
+    name      String    @db.VarChar(32)
+    worldName String    @db.VarChar(32)
+    missions  Mission[]
 
-  @@map("maps")
+    @@map("maps")
+}
+
+model GameType {
+    id       Int       @id @default(autoincrement())
+    name     String    @db.VarChar(16)
+    missions Mission[]
+
+    @@map("game_types")
+}
+
+model Status {
+    id       Int       @id @default(autoincrement())
+    name     String    @db.VarChar(32)
+    missions Mission[]
+
+    @@map("statuses")
+}
+
+model DLC {
+    id       Int              @id @default(autoincrement())
+    name     String           @db.VarChar(32)
+    missions MissionsOnDLCs[]
+
+    @@map("dlcs")
+}
+
+model Modset {
+    id      Int       @id @default(autoincrement())
+    name    String    @db.VarChar(64)
+    link    String    @db.VarChar(512)
+    Mission Mission[]
+
+    @@map("modsets")
+}
+
+model MissionFile {
+    id          Int      @id @default(autoincrement())
+    missionId   Int
+    mission     Mission? @relation(fields: [missionId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    name        String?  @db.VarChar(256)
+    path        String?  @db.VarChar(256)
+    downloadUrl String   @db.VarChar(256)
+    version     Int
+    description String   @db.VarChar(512)
+    createdAt   DateTime @default(now())
+    createdById Int
+    createdBy   User?    @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+
+    @@map("mission_files")
+}
+
+model Mission {
+    id          Int              @id @default(autoincrement())
+    name        String
+    author      String           @db.VarChar(32)
+    slotsMin    Int
+    slotsMax    Int
+    mapId       Int              @default(1)
+    map         Map              @relation(fields: [mapId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    gameTypeId  Int              @default(1)
+    gameType    GameType         @relation(fields: [gameTypeId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    statusId    Int              @default(1)
+    status      Status           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    dlcs        MissionsOnDLCs[]
+    modsetId    Int              @default(1)
+    modset      Modset           @relation(fields: [modsetId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    description String           @db.VarChar(1024)
+    createdAt   DateTime         @default(now())
+    createdById Int
+    createdBy   User?            @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    MissionFile MissionFile[]
+
+    @@map("missions")
+}
+
+model MissionsOnDLCs {
+    dlcId     Int
+    dlc       DLC     @relation(fields: [dlcId], references: [id])
+    missionId Int
+    mission   Mission @relation(fields: [missionId], references: [id])
+
+    @@id([dlcId, missionId])
+    @@map("missions_on_dlcs")
 }
