@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
+    static readonly TOKEN_LIFETIME = '30d';
+
     constructor(
         private prisma: PrismaService,
         private jwt: JwtService,
@@ -63,7 +65,7 @@ export class AuthService {
             username,
         };
         const token = await this.jwt.signAsync(payload, {
-            expiresIn: '30m',
+            expiresIn: AuthService.TOKEN_LIFETIME,
             secret: secret,
         });
 
