@@ -60,10 +60,11 @@ model DLC {
 }
 
 model Modset {
-    id      Int       @id @default(autoincrement())
-    name    String    @db.VarChar(64)
-    link    String    @db.VarChar(512)
-    Mission Mission[]
+    id          Int       @id @default(autoincrement())
+    name        String    @db.VarChar(64)
+    link        String    @db.VarChar(512)
+    description String    @db.VarChar(512)
+    Mission     Mission[]
 
     @@map("modsets")
 }
@@ -85,25 +86,25 @@ model MissionFile {
 }
 
 model Mission {
-    id          Int              @id @default(autoincrement())
-    name        String
-    author      String           @db.VarChar(32)
-    slotsMin    Int
-    slotsMax    Int
-    mapId       Int              @default(1)
-    map         Map              @relation(fields: [mapId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
-    gameTypeId  Int              @default(1)
-    gameType    GameType         @relation(fields: [gameTypeId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
-    statusId    Int              @default(1)
-    status      Status           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
-    dlcs        MissionsOnDLCs[]
-    modsetId    Int              @default(1)
-    modset      Modset           @relation(fields: [modsetId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
-    description String           @db.VarChar(1024)
-    createdAt   DateTime         @default(now())
-    createdById Int
-    createdBy   User?            @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
-    MissionFile MissionFile[]
+    id           Int              @id @default(autoincrement())
+    name         String
+    author       String           @db.VarChar(32)
+    slotsMin     Int
+    slotsMax     Int
+    mapId        Int              @default(1)
+    map          Map              @relation(fields: [mapId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    gameTypeId   Int              @default(1)
+    gameType     GameType         @relation(fields: [gameTypeId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    statusId     Int              @default(1)
+    status       Status           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    dlcs         MissionsOnDLCs[]
+    modsetId     Int              @default(1)
+    modset       Modset           @relation(fields: [modsetId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    description  String           @db.VarChar(1024)
+    createdAt    DateTime         @default(now())
+    createdById  Int
+    createdBy    User?            @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    missionFiles MissionFile[]
 
     @@map("missions")
 }
