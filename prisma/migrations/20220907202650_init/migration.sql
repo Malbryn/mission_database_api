@@ -50,6 +50,7 @@ CREATE TABLE "modsets" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(64) NOT NULL,
     "link" VARCHAR(512) NOT NULL,
+    "description" VARCHAR(512) NOT NULL,
 
     CONSTRAINT "modsets_pkey" PRIMARY KEY ("id")
 );
