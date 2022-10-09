@@ -5,6 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class DlcService extends AbstractService {
     constructor(prisma: PrismaService) {
-        super(prisma, 'dlc');
+        super(prisma, 'DLC');
     }
 }
