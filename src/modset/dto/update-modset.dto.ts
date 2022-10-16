@@ -8,7 +8,7 @@ export class UpdateModsetDto extends AbstractDto {
 
     @IsString()
     @IsOptional()
-    url?: string;
+    link?: string;
 
     @IsString()
     @IsOptional()

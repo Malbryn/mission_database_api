@@ -8,7 +8,7 @@ export class CreateModsetDto extends AbstractDto {
 
     @IsString()
     @IsNotEmpty()
-    url: string;
+    link: string;
 
     @IsString()
     @IsNotEmpty()
