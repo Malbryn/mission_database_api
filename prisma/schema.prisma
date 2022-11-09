@@ -71,7 +71,7 @@ model Modset {
 
 model MissionFile {
     id          Int      @id @default(autoincrement())
-    missionId   Int
+    missionId   Int?
     mission     Mission? @relation(fields: [missionId], references: [id], onUpdate: Cascade, onDelete: SetNull)
     name        String?  @db.VarChar(256)
     path        String?  @db.VarChar(256)
@@ -79,7 +79,7 @@ model MissionFile {
     version     Int
     description String   @db.VarChar(512)
     createdAt   DateTime @default(now())
-    createdById Int
+    createdById Int?
     createdBy   User?    @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
     @@map("mission_files")
@@ -102,7 +102,7 @@ model Mission {
     modset       Modset           @relation(fields: [modsetId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
     description  String           @db.VarChar(1024)
     createdAt    DateTime         @default(now())
-    createdById  Int
+    createdById  Int?
     createdBy    User?            @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)
     missionFiles MissionFile[]
 
