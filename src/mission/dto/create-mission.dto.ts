@@ -8,6 +8,8 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateDlcDto } from '../../dlc/dto';
 
 export class CreateMissionDto extends AbstractDto {
     @IsString()
@@ -19,44 +21,52 @@ export class CreateMissionDto extends AbstractDto {
     author: string;
 
     @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
     slotsMin: number;
 
     @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
     slotsMax: string;
 
-    @IsObject()
+    @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
-    map: any;
+    mapId: any;
 
-    @IsObject()
+    @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
-    gameType: any;
+    gameTypeId: any;
 
-    @IsObject()
+    @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
-    status: any;
+    statusId: any;
 
     @IsArray()
+    @Type(() => Number)
     @IsNotEmpty()
-    dlcs: any[];
+    dlcIds: number[];
 
-    @IsObject()
+    @IsNumber()
+    @Type(() => Number)
     @IsNotEmpty()
-    modset: any;
+    modsetId: any;
 
     @IsString()
     @IsNotEmpty()
     description: string;
 
     @IsDate()
-    @IsNotEmpty()
+    @IsOptional()
     createdAt: Date;
 
-    @IsObject()
-    @IsNotEmpty()
-    createdBy: any;
+    @IsNumber()
+    @Type(() => Number)
+    @IsOptional()
+    createdById: any;
 
     @IsArray()
     @IsOptional()
