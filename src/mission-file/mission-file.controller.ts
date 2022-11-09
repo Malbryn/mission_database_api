@@ -19,7 +19,7 @@ export class MissionFileController extends AbstractController<
     CreateMissionFileDto,
     UpdateMissionFileDto
 > {
-    constructor(missionFilesService: MissionFileService) {
+    constructor(private missionFilesService: MissionFileService) {
         super(missionFilesService);
     }
 

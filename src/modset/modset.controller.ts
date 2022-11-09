@@ -15,7 +15,7 @@ export class ModsetController extends AbstractController<
     CreateModsetDto,
     UpdateModsetDto
 > {
-    constructor(modsetService: ModsetService) {
+    constructor(private modsetService: ModsetService) {
         super(modsetService);
     }
 

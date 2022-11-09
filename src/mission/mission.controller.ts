@@ -15,7 +15,7 @@ export class MissionController extends AbstractController<
     CreateMissionDto,
     UpdateMissionDto
 > {
-    constructor(missionService: MissionService) {
+    constructor(private missionService: MissionService) {
         super(missionService);
     }
 

@@ -15,7 +15,7 @@ export class DlcController extends AbstractController<
     CreateDlcDto,
     UpdateDlcDto
 > {
-    constructor(dlcService: DlcService) {
+    constructor(private dlcService: DlcService) {
         super(dlcService);
     }
 

@@ -15,7 +15,7 @@ export class MapController extends AbstractController<
     CreateMapDto,
     UpdateMapDto
 > {
-    constructor(mapService: MapService) {
+    constructor(private mapService: MapService) {
         super(mapService);
     }
 

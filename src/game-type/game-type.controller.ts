@@ -15,7 +15,7 @@ export class GameTypeController extends AbstractController<
     CreateGameTypeDto,
     UpdateGameTypeDto
 > {
-    constructor(gameTypeService: GameTypeService) {
+    constructor(private gameTypeService: GameTypeService) {
         super(gameTypeService);
     }
 

@@ -15,7 +15,7 @@ export class StatusController extends AbstractController<
     CreateStatusDto,
     UpdateStatusDto
 > {
-    constructor(statusService: StatusService) {
+    constructor(private statusService: StatusService) {
         super(statusService);
     }
 
