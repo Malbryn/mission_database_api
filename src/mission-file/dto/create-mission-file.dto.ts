@@ -1,17 +1,12 @@
 import { AbstractDto } from '../../common/abstract.dto';
-import {
-    IsDate,
-    IsNotEmpty,
-    IsNumber,
-    IsObject,
-    IsOptional,
-    IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateMissionFileDto extends AbstractDto {
-    @IsObject()
+    @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
-    mission: any;
+    missionId: number;
 
     @IsString()
     @IsNotEmpty()
@@ -25,6 +20,7 @@ export class CreateMissionFileDto extends AbstractDto {
     @IsOptional()
     downloadUrl: string;
 
+    @Type(() => Number)
     @IsNumber()
     @IsNotEmpty()
     version: number;
@@ -33,11 +29,8 @@ export class CreateMissionFileDto extends AbstractDto {
     @IsOptional()
     description: string;
 
-    @IsDate()
-    @IsOptional()
-    createdAt: Date;
-
-    @IsObject()
+    @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
-    createdBy: any;
+    createdById: any;
 }
