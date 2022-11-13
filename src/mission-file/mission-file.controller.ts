@@ -24,6 +24,7 @@ import { Octokit } from '@octokit/rest';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Controller('mission-files')
 export class MissionFileController extends AbstractController<
@@ -45,7 +46,6 @@ export class MissionFileController extends AbstractController<
         private configService: ConfigService,
     ) {
         super(missionFilesService);
-
         this.initRepository();
     }
 
@@ -62,32 +62,14 @@ export class MissionFileController extends AbstractController<
     }
 
     @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './uploads',
-                filename: (req, file, callback) => {
-                    const filename = file.originalname;
-                    callback(null, filename);
-                },
-            }),
-        }),
+        FileInterceptor(
+            'file',
+            MissionFileController.getFileInterceptorSettings(),
+        ),
     )
     @Post()
     async uploadAndCreate(
-        @UploadedFile(
-            new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({
-                        maxSize: MissionFileController.FILE_SIZE_LIMIT,
-                    }),
-                    new FileTypeValidator({
-                        fileType: 'application/octet-stream',
-                    }),
-                ],
-                fileIsRequired: true,
-                errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-            }),
-        )
+        @UploadedFile(MissionFileController.getFileParserPipe())
         file: Express.Multer.File,
         @Body() dto: CreateMissionFileDto,
     ): Promise<void> {
@@ -119,6 +101,33 @@ export class MissionFileController extends AbstractController<
             downloadUrl: downloadUrl,
             path: path,
             description: description,
+        });
+    }
+
+    static getFileInterceptorSettings(): MulterOptions {
+        return {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: (req, file, callback) => {
+                    const filename = file.originalname;
+                    callback(null, filename);
+                },
+            }),
+        };
+    }
+
+    static getFileParserPipe(): ParseFilePipe {
+        return new ParseFilePipe({
+            validators: [
+                new MaxFileSizeValidator({
+                    maxSize: MissionFileController.FILE_SIZE_LIMIT,
+                }),
+                new FileTypeValidator({
+                    fileType: 'application/octet-stream',
+                }),
+            ],
+            fileIsRequired: true,
+            errorHttpStatusCode: HttpStatus.BAD_REQUEST,
         });
     }
 
