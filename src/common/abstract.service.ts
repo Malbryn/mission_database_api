@@ -4,17 +4,17 @@ import { AbstractDto } from './abstract.dto';
 
 @Injectable()
 export abstract class AbstractService {
-    private model;
+    protected model;
 
     protected constructor(
         protected prisma: PrismaService,
-        private type: string,
+        protected type: string,
     ) {
         this.model = (this.prisma as any)[type];
     }
 
-    async get(id: number) {
-        const data = await (this.prisma as any)[this.type].findFirst({
+    async get(id: number): Promise<AbstractDto> {
+        const data = await this.model.findFirst({
             where: {
                 id: id,
             },
@@ -25,17 +25,17 @@ export abstract class AbstractService {
         return data;
     }
 
-    async getAll() {
+    async getAll(): Promise<AbstractDto[]> {
         return await this.model.findMany();
     }
 
-    async create(dto: AbstractDto) {
+    async create(dto: AbstractDto): Promise<AbstractDto> {
         return await this.model.create({
             data: { ...dto },
         });
     }
 
-    async update(id: number, dto: AbstractDto) {
+    async update(id: number, dto: AbstractDto): Promise<AbstractDto> {
         const data = await this.model.findUnique({
             where: {
                 id: id,
@@ -52,7 +52,7 @@ export abstract class AbstractService {
         });
     }
 
-    async delete(id: number) {
+    async delete(id: number): Promise<AbstractDto> {
         const data = await this.model.findUnique({
             where: {
                 id: id,
