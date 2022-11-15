@@ -20,7 +20,7 @@ export abstract class AbstractController<
 > {
     protected constructor(protected service: AbstractService) {}
 
-    abstract create(dto: T): Promise<any>;
+    abstract create(dto: T, file?: Express.Multer.File): Promise<any>;
 
     abstract update(id: number, dto: S): Promise<any>;
 

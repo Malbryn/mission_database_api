@@ -19,7 +19,6 @@ import { MissionFileService } from './mission-file.service';
 import { CreateMissionFileDto, UpdateMissionFileDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { AbstractDto } from '../common/abstract.dto';
 import { Octokit } from '@octokit/rest';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
@@ -49,18 +48,6 @@ export class MissionFileController extends AbstractController<
         this.initRepository();
     }
 
-    override create(@Body() dto: AbstractDto): Promise<any> {
-        return this.service.create(dto);
-    }
-
-    @Patch(':id')
-    override update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() dto: UpdateMissionFileDto,
-    ): Promise<any> {
-        return this.service.update(id, dto);
-    }
-
     @UseInterceptors(
         FileInterceptor(
             'file',
@@ -68,11 +55,11 @@ export class MissionFileController extends AbstractController<
         ),
     )
     @Post()
-    async uploadAndCreate(
+    override async create(
+        @Body() dto: CreateMissionFileDto,
         @UploadedFile(MissionFileController.getFileParserPipe())
         file: Express.Multer.File,
-        @Body() dto: CreateMissionFileDto,
-    ): Promise<void> {
+    ): Promise<any> {
         const pboName = file.filename; // MF_test.Stratis.pbo
         const fileName = pboName.split('.pbo')[0]; // MF_test.Stratis
 
@@ -85,7 +72,7 @@ export class MissionFileController extends AbstractController<
 
         const { missionId, name, version, createdById, description } = dto;
 
-        return this.create({
+        return this.service.create({
             mission: {
                 connect: {
                     id: missionId,
@@ -102,6 +89,14 @@ export class MissionFileController extends AbstractController<
             path: path,
             description: description,
         });
+    }
+
+    @Patch(':id')
+    override update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateMissionFileDto,
+    ): Promise<any> {
+        return this.service.update(id, dto);
     }
 
     static getFileInterceptorSettings(): MulterOptions {
