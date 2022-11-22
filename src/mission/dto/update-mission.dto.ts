@@ -11,10 +11,12 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     author?: string;
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     slotsMin?: number;
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     slotsMax?: string;
@@ -24,10 +26,12 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     mapId?: number;
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     gameTypeId?: number;
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     statusId?: number;
@@ -37,6 +41,7 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     dlcs: number[];
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     modsetId?: number;
@@ -45,6 +50,7 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     description?: string;
 
+    @Type(() => Number)
     @IsNumber()
     @IsOptional()
     createdById?: number;

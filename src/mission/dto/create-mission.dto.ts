@@ -1,15 +1,12 @@
 import { AbstractDto } from '../../common/abstract.dto';
 import {
     IsArray,
-    IsDate,
     IsNotEmpty,
     IsNumber,
-    IsObject,
     IsOptional,
     IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateDlcDto } from '../../dlc/dto';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateMissionDto extends AbstractDto {
     @IsString()
@@ -20,38 +17,38 @@ export class CreateMissionDto extends AbstractDto {
     @IsNotEmpty()
     author: string;
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     slotsMin: number;
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     slotsMax: string;
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     mapId: any;
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     gameTypeId: any;
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     statusId: any;
 
-    @IsArray()
-    @Type(() => Number)
+    @Transform((value) => JSON.parse(value.obj.dlcs))
+    @IsNumber({}, { each: true })
     @IsNotEmpty()
-    dlcIds: number[];
+    dlcs: number[];
 
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     modsetId: any;
 
@@ -59,12 +56,8 @@ export class CreateMissionDto extends AbstractDto {
     @IsNotEmpty()
     description: string;
 
-    @IsDate()
-    @IsOptional()
-    createdAt: Date;
-
-    @IsNumber()
     @Type(() => Number)
+    @IsNumber()
     @IsOptional()
     createdById: any;
 
