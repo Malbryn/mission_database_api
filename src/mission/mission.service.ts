@@ -2,29 +2,33 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AbstractService } from '../common/abstract.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AbstractDto } from '../common/abstract.dto';
-import { UpdateMissionDto } from './dto';
+import { CreateMissionDto, UpdateMissionDto } from './dto';
 
 @Injectable()
 export class MissionService extends AbstractService {
-    selectedFields: object = {
-        id: true,
-        name: true,
-        author: true,
-        slotsMin: true,
-        slotsMax: true,
+    readonly relatedFields = {
         map: true,
         gameType: true,
         status: true,
+        modset: true,
+        createdBy: true,
+        missionFiles: true,
         dlcs: {
             include: {
                 dlc: true,
             },
         },
-        modset: true,
+    };
+
+    readonly allFields = {
+        id: true,
+        name: true,
+        author: true,
+        slotsMin: true,
+        slotsMax: true,
         description: true,
-        createdBy: true,
         createdAt: true,
-        missionFiles: true,
+        ...this.relatedFields,
     };
 
     constructor(prisma: PrismaService) {
@@ -36,36 +40,48 @@ export class MissionService extends AbstractService {
             where: {
                 id: id,
             },
-            select: this.selectedFields,
+            select: this.allFields,
         });
 
         if (!result)
             throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
 
-        const mappedResult = {
+        return {
             ...result,
             dlcs: result.dlcs.map((dlc: any) => dlc['dlc']),
         };
-
-        return mappedResult;
     }
 
     override async getAll(): Promise<AbstractDto[]> {
         const result = await this.model.findMany({
-            select: this.selectedFields,
+            select: this.allFields,
         });
 
-        const mappedResult = result.map((element: any) => {
+        return result.map((element: any) => {
             return {
                 ...element,
                 dlcs: element.dlcs.map((dlc: any) => dlc['dlc']),
             };
         });
-
-        return mappedResult;
     }
 
-    // TODO: create
+    override async create(dto: CreateMissionDto): Promise<AbstractDto> {
+        return await this.model.create({
+            data: {
+                ...dto,
+                dlcs: {
+                    create: dto.dlcs.map((id: number) => ({
+                        dlc: {
+                            connect: {
+                                id: id,
+                            },
+                        },
+                    })),
+                },
+            },
+            include: this.relatedFields,
+        });
+    }
 
     override async update(
         id: number,
@@ -96,9 +112,7 @@ export class MissionService extends AbstractService {
                     })),
                 },
             },
-            include: {
-                map: true,
-            },
+            include: this.relatedFields,
         });
     }
 }
