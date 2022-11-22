@@ -1,19 +1,8 @@
 import { AbstractDto } from '../../common/abstract.dto';
-import {
-    IsArray,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-} from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class UpdateMissionDto extends AbstractDto {
-    @Type(() => Number)
-    @IsNumber()
-    @IsNotEmpty()
-    id: number;
-
     @IsString()
     @IsOptional()
     name?: string;
