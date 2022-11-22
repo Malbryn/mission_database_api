@@ -36,3 +36,5 @@ lerna-debug.log*
 
 # Environment files
 .env
+
+prisma/seed.ts
