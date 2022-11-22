@@ -1,14 +1,19 @@
 import { AbstractDto } from '../../common/abstract.dto';
 import {
     IsArray,
-    IsDate,
-    IsOptional,
+    IsNotEmpty,
     IsNumber,
-    IsObject,
+    IsOptional,
     IsString,
 } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateMissionDto extends AbstractDto {
+    @Type(() => Number)
+    @IsNumber()
+    @IsNotEmpty()
+    id: number;
+
     @IsString()
     @IsOptional()
     name?: string;
@@ -25,37 +30,35 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     slotsMax?: string;
 
-    @IsObject()
+    @Type(() => Number)
+    @IsNumber()
     @IsOptional()
-    map?: any;
+    mapId?: number;
 
-    @IsObject()
+    @IsNumber()
     @IsOptional()
-    gameType?: any;
+    gameTypeId?: number;
 
-    @IsObject()
+    @IsNumber()
     @IsOptional()
-    status?: any;
+    statusId?: number;
 
-    @IsArray()
+    @Transform((value) => JSON.parse(value.obj.dlcs))
+    @IsNumber({}, { each: true })
     @IsOptional()
-    dlcs?: any[];
+    dlcs: number[];
 
-    @IsObject()
+    @IsNumber()
     @IsOptional()
-    modset?: any;
+    modsetId?: number;
 
     @IsString()
     @IsOptional()
     description?: string;
 
-    @IsDate()
+    @IsNumber()
     @IsOptional()
-    createdAt?: Date;
-
-    @IsObject()
-    @IsOptional()
-    createdBy?: any;
+    createdById?: number;
 
     @IsArray()
     @IsOptional()
