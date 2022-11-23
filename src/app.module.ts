@@ -11,8 +11,6 @@ import { ModsetModule } from './modset/modset.module';
 import { MissionModule } from './mission/mission.module';
 import { MissionFileModule } from './mission-file/mission-file.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { APP_GUARD } from '@nestjs/core';
-import { RoleGuard } from './auth/guard/role.guard';
 
 @Module({
     imports: [
