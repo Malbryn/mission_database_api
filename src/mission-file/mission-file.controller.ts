@@ -1,8 +1,8 @@
 import {
     BadRequestException,
     Body,
-    Controller,
-    FileTypeValidator,
+    Controller, Delete,
+    FileTypeValidator, Get, HttpCode,
     HttpStatus,
     Logger,
     MaxFileSizeValidator,
@@ -11,7 +11,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    UploadedFile,
+    UploadedFile, UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { AbstractController } from '../common/abstract.controller';
@@ -24,6 +24,9 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { RoleGuard } from '../auth/guard/role.guard';
+import { Role } from '../auth/decorator/roles.decorator';
+import { UserRole } from '../auth/enum/user-role.enum';
 
 @Controller('mission-files')
 export class MissionFileController extends AbstractController<
@@ -48,6 +51,20 @@ export class MissionFileController extends AbstractController<
         this.initRepository();
     }
 
+    @Get(':id')
+    @UseGuards(RoleGuard)
+    @Role(UserRole.CREATOR)
+    override get(@Param('id', ParseIntPipe) id: number): Promise<any> {
+        return this.service.get(id);
+    }
+
+    @Get()
+    @UseGuards(RoleGuard)
+    @Role(UserRole.CREATOR)
+    override getAll(): Promise<any> {
+        return this.service.getAll();
+    }
+
     @UseInterceptors(
         FileInterceptor(
             'file',
@@ -55,6 +72,8 @@ export class MissionFileController extends AbstractController<
         ),
     )
     @Post()
+    @UseGuards(RoleGuard)
+    @Role(UserRole.ADMIN)
     override async create(
         @Body() dto: CreateMissionFileDto,
         @UploadedFile(MissionFileController.getFileParserPipe())
@@ -92,11 +111,22 @@ export class MissionFileController extends AbstractController<
     }
 
     @Patch(':id')
+    @UseGuards(RoleGuard)
+    @Role(UserRole.ADMIN)
     override update(
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateMissionFileDto,
     ): Promise<any> {
         return this.service.update(id, dto);
+    }
+
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Delete(':id')
+    @UseGuards(RoleGuard)
+    @Role(UserRole.ADMIN)
+    override delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
+        return this.service.delete(id);
+        // TODO: delete from repo
     }
 
     static getFileInterceptorSettings(): MulterOptions {

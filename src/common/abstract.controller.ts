@@ -1,14 +1,5 @@
 import { JwtGuard } from '../auth/guard';
-import {
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    ParseIntPipe,
-    UseGuards,
-} from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { AbstractService } from './abstract.service';
 import { AbstractDto } from './abstract.dto';
 
@@ -24,19 +15,9 @@ export abstract class AbstractController<
 
     abstract update(id: number, dto: S): Promise<any>;
 
-    @Get(':id')
-    get(@Param('id', ParseIntPipe) id: number): Promise<any> {
-        return this.service.get(id);
-    }
+    abstract get(id: number): Promise<any>;
 
-    @Get()
-    getAll(): Promise<any> {
-        return this.service.getAll();
-    }
+    abstract getAll(): Promise<any>;
 
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @Delete(':id')
-    delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
-        return this.service.delete(id);
-    }
+    abstract delete(id: number): Promise<any>;
 }
