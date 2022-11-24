@@ -16,6 +16,7 @@ model User {
     username    String        @unique @db.VarChar(32)
     password    String
     createdAt   DateTime      @default(now())
+    lastLogin   DateTime      @default(now())
     isMember    Boolean       @default(true)
     isCreator   Boolean       @default(false)
     isStaff     Boolean       @default(false)

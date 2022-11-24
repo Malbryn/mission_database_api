@@ -4,6 +4,7 @@ CREATE TABLE "users" (
     "username" VARCHAR(32) NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastLogin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "isMember" BOOLEAN NOT NULL DEFAULT true,
     "isCreator" BOOLEAN NOT NULL DEFAULT false,
     "isStaff" BOOLEAN NOT NULL DEFAULT false,
@@ -58,14 +59,14 @@ CREATE TABLE "modsets" (
 -- CreateTable
 CREATE TABLE "mission_files" (
     "id" SERIAL NOT NULL,
-    "missionId" INTEGER NOT NULL,
+    "missionId" INTEGER,
     "name" VARCHAR(256),
     "path" VARCHAR(256),
     "downloadUrl" VARCHAR(256) NOT NULL,
     "version" INTEGER NOT NULL,
     "description" VARCHAR(512) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdById" INTEGER NOT NULL,
+    "createdById" INTEGER,
 
     CONSTRAINT "mission_files_pkey" PRIMARY KEY ("id")
 );
@@ -83,7 +84,7 @@ CREATE TABLE "missions" (
     "modsetId" INTEGER NOT NULL DEFAULT 1,
     "description" VARCHAR(1024) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdById" INTEGER NOT NULL,
+    "createdById" INTEGER,
 
     CONSTRAINT "missions_pkey" PRIMARY KEY ("id")
 );
