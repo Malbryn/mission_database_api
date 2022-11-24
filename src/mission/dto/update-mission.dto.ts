@@ -36,7 +36,7 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     statusId?: number;
 
-    @Transform((value) => JSON.parse(value.obj.dlcs))
+    // @Transform((value) => JSON.parse(value.obj.dlcs))
     @IsNumber({}, { each: true })
     @IsOptional()
     dlcs: number[];

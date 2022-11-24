@@ -3,6 +3,7 @@ import { AbstractService } from '../common/abstract.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AbstractDto } from '../common/abstract.dto';
 import { CreateMissionDto, UpdateMissionDto } from './dto';
+import { exclude } from '../helpers/exclude';
 
 @Injectable()
 export class MissionService extends AbstractService {
@@ -66,7 +67,7 @@ export class MissionService extends AbstractService {
     }
 
     override async create(dto: CreateMissionDto): Promise<AbstractDto> {
-        return await this.model.create({
+        const result = await this.model.create({
             data: {
                 ...dto,
                 dlcs: {
@@ -81,6 +82,16 @@ export class MissionService extends AbstractService {
             },
             include: this.relatedFields,
         });
+
+        const reducedResult = exclude(result, [
+            'mapId',
+            'gameTypeId',
+            'statusId',
+            'modsetId',
+            'createdById',
+        ]);
+
+        return reducedResult;
     }
 
     override async update(
@@ -95,7 +106,7 @@ export class MissionService extends AbstractService {
 
         if (!data) throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
 
-        return await this.model.update({
+        const result = await this.model.update({
             where: {
                 id: id,
             },
@@ -114,5 +125,18 @@ export class MissionService extends AbstractService {
             },
             include: this.relatedFields,
         });
+
+        const reducedResult = exclude(result, [
+            'mapId',
+            'gameTypeId',
+            'statusId',
+            'modsetId',
+            'createdById',
+        ]);
+
+        return {
+            ...reducedResult,
+            dlcs: result.dlcs.map((dlc: any) => dlc['dlc']),
+        };
     }
 }
