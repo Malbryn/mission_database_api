@@ -12,5 +12,7 @@ export class UserController {
     }
 
     @Patch()
-    editUser() {}
+    editUser() {
+        // TODO
+    }
 }
