@@ -49,6 +49,7 @@ export class MissionService extends AbstractService {
 
         return {
             ...result,
+            createdBy: exclude(result.createdBy, ['password']),
             dlcs: result.dlcs.map((dlc: any) => dlc['dlc']),
         };
     }
@@ -61,6 +62,7 @@ export class MissionService extends AbstractService {
         return result.map((element: any) => {
             return {
                 ...element,
+                createdBy: exclude(element.createdBy, ['password']),
                 dlcs: element.dlcs.map((dlc: any) => dlc['dlc']),
             };
         });
@@ -91,7 +93,11 @@ export class MissionService extends AbstractService {
             'createdById',
         ]);
 
-        return reducedResult;
+        return {
+            ...reducedResult,
+            createdBy: exclude(reducedResult.createdBy, ['password']),
+            dlcs: result.dlcs.map((dlc: any) => dlc['dlc']),
+        };
     }
 
     override async update(
@@ -136,6 +142,7 @@ export class MissionService extends AbstractService {
 
         return {
             ...reducedResult,
+            createdBy: exclude(reducedResult.createdBy, ['password']),
             dlcs: result.dlcs.map((dlc: any) => dlc['dlc']),
         };
     }
