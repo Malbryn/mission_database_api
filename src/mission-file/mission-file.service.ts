@@ -2,49 +2,79 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AbstractService } from '../common/abstract.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AbstractDto } from '../common/abstract.dto';
+import { exclude } from '../helpers/exclude';
+import { CreateMissionFileDto, UpdateMissionFileDto } from './dto';
 
 @Injectable()
 export class MissionFileService extends AbstractService {
+    readonly relatedFields = {
+        createdBy: true,
+        mission: true,
+    };
+
+    readonly allFields = {
+        id: true,
+        name: true,
+        path: true,
+        downloadUrl: true,
+        version: true,
+        description: true,
+        createdAt: true,
+        ...this.relatedFields,
+    };
+
     constructor(prisma: PrismaService) {
         super(prisma, 'missionFile');
     }
 
     override async get(id: number): Promise<AbstractDto> {
-        const data = await this.model.findFirst({
+        const result = await this.model.findFirst({
             where: {
                 id: id,
             },
-            include: {
-                mission: true,
-                createdBy: true,
-            },
+            select: this.allFields,
         });
 
-        if (!data) throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
+        if (!result)
+            throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
 
-        return data;
+        return {
+            ...result,
+            createdBy: exclude(result.createdBy, ['password']),
+        };
     }
 
     override async getAll(): Promise<AbstractDto[]> {
-        return await this.model.findMany({
-            include: {
-                mission: true,
-                createdBy: true,
-            },
+        const result = await this.model.findMany({
+            select: this.allFields,
+        });
+
+        return result.map((element: any) => {
+            return {
+                ...element,
+                createdBy: exclude(element.createdBy, ['password']),
+            };
         });
     }
 
-    override async create(dto: AbstractDto): Promise<AbstractDto> {
-        return await this.model.create({
+    override async create(dto: CreateMissionFileDto): Promise<AbstractDto> {
+        const result = await this.model.create({
             data: { ...dto },
-            include: {
-                mission: true,
-                createdBy: true,
-            },
+            include: this.relatedFields,
         });
+
+        const reducedResult = exclude(result, ['missionId', 'createdById']);
+
+        return {
+            ...reducedResult,
+            createdBy: exclude(result.createdBy, ['password']),
+        };
     }
 
-    override async update(id: number, dto: AbstractDto): Promise<AbstractDto> {
+    override async update(
+        id: number,
+        dto: UpdateMissionFileDto,
+    ): Promise<AbstractDto> {
         const data = await this.model.findUnique({
             where: {
                 id: id,
@@ -53,15 +83,19 @@ export class MissionFileService extends AbstractService {
 
         if (!data) throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
 
-        return await this.model.update({
+        const result = await this.model.update({
             where: {
                 id: id,
             },
             data: { ...dto },
-            include: {
-                mission: true,
-                createdBy: true,
-            },
+            include: this.relatedFields,
         });
+
+        const reducedResult = exclude(result, ['missionId', 'createdById']);
+
+        return {
+            ...reducedResult,
+            createdBy: exclude(result.createdBy, ['password']),
+        };
     }
 }
