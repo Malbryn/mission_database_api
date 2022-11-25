@@ -6,7 +6,7 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateMissionDto extends AbstractDto {
     @IsString()
@@ -42,7 +42,7 @@ export class CreateMissionDto extends AbstractDto {
     @IsNotEmpty()
     statusId: any;
 
-    @Transform((value) => JSON.parse(value.obj.dlcs))
+    // @Transform((value) => JSON.parse(value.obj.dlcs))
     @IsNumber({}, { each: true })
     @IsNotEmpty()
     dlcs: number[];
