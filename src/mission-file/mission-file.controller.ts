@@ -1,8 +1,11 @@
 import {
     BadRequestException,
     Body,
-    Controller, Delete,
-    FileTypeValidator, Get, HttpCode,
+    Controller,
+    Delete,
+    FileTypeValidator,
+    Get,
+    HttpCode,
     HttpStatus,
     Logger,
     MaxFileSizeValidator,
@@ -11,7 +14,9 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    UploadedFile, UseGuards,
+    Res,
+    UploadedFile,
+    UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { AbstractController } from '../common/abstract.controller';
@@ -27,6 +32,8 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import { RoleGuard } from '../auth/guard/role.guard';
 import { Role } from '../auth/decorator/roles.decorator';
 import { UserRole } from '../auth/enum/user-role.enum';
+import { HttpService } from '@nestjs/axios';
+import { Response } from 'express';
 
 @Controller('mission-files')
 export class MissionFileController extends AbstractController<
@@ -46,6 +53,7 @@ export class MissionFileController extends AbstractController<
     constructor(
         private missionFilesService: MissionFileService,
         private configService: ConfigService,
+        private httpService: HttpService,
     ) {
         super(missionFilesService);
         this.initRepository();
@@ -129,6 +137,28 @@ export class MissionFileController extends AbstractController<
         // TODO: delete from repo
     }
 
+    @Get(':id/download')
+    @UseGuards(RoleGuard)
+    @Role(UserRole.CREATOR)
+    async downloadFile(
+        @Param('id', ParseIntPipe) id: number,
+        @Res() res: Response,
+    ): Promise<any> {
+        const missionFile = (await this.service.get(id)) as any;
+        const url = missionFile.downloadUrl;
+        const token = this.getToken();
+
+        const response = await this.httpService.axiosRef(url, {
+            responseType: 'stream',
+            headers: {
+                Authorization: 'token ' + token,
+            },
+        });
+
+        response.data.pipe(res);
+        return response;
+    }
+
     static getFileInterceptorSettings(): MulterOptions {
         return {
             storage: diskStorage({
@@ -205,8 +235,7 @@ export class MissionFileController extends AbstractController<
         this.logger.log('Initialising GitHub repository...');
 
         // GitHub PAT
-        const token = this.configService.get('GITHUB_TOKEN');
-        if (!token) throw new Error('GITHUB_TOKEN is not defined!');
+        const token = this.getToken();
 
         this.octokit = new Octokit({
             auth: token,
@@ -254,5 +283,12 @@ export class MissionFileController extends AbstractController<
                 this.logger.debug(`Removed uploaded file: ${filePath}`);
             }
         });
+    }
+
+    private getToken(): string {
+        const token = this.configService.get('GITHUB_TOKEN');
+        if (!token) throw new Error('GITHUB_TOKEN is not defined!');
+
+        return token;
     }
 }
