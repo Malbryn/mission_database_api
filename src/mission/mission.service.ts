@@ -14,7 +14,11 @@ export class MissionService extends AbstractService {
         modset: true,
         framework: true,
         createdBy: true,
-        missionFiles: true,
+        missionFiles: {
+            include: {
+                createdBy: true,
+            },
+        },
         dlcs: {
             include: {
                 dlc: true,
@@ -49,6 +53,12 @@ export class MissionService extends AbstractService {
         if (!result)
             throw new HttpException('Not found.', HttpStatus.NOT_FOUND);
 
+        result.missionFiles.forEach((missionFile: any) => {
+            missionFile.createdBy = exclude(missionFile.createdBy, [
+                'password',
+            ]);
+        });
+
         return {
             ...result,
             createdBy: exclude(result.createdBy, ['password']),
@@ -59,6 +69,14 @@ export class MissionService extends AbstractService {
     override async getAll(): Promise<AbstractDto[]> {
         const result = await this.model.findMany({
             select: this.allFields,
+        });
+
+        result.forEach((mission: any) => {
+            mission.missionFiles.forEach((missionFile: any) => {
+                missionFile.createdBy = exclude(missionFile.createdBy, [
+                    'password',
+                ]);
+            });
         });
 
         return result.map((element: any) => {
@@ -95,6 +113,12 @@ export class MissionService extends AbstractService {
             'frameworkId',
             'createdById',
         ]);
+
+        result.missionFiles.forEach((missionFile: any) => {
+            missionFile.createdBy = exclude(missionFile.createdBy, [
+                'password',
+            ]);
+        });
 
         return {
             ...reducedResult,
@@ -143,6 +167,12 @@ export class MissionService extends AbstractService {
             'frameworkId',
             'createdById',
         ]);
+
+        result.missionFiles.forEach((missionFile: any) => {
+            missionFile.createdBy = exclude(missionFile.createdBy, [
+                'password',
+            ]);
+        });
 
         return {
             ...reducedResult,
