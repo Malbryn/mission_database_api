@@ -7,6 +7,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    InternalServerErrorException,
     Logger,
     MaxFileSizeValidator,
     Param,
@@ -93,11 +94,14 @@ export class MissionFileController extends AbstractController<
         const path = `${fileName}.v${dto.version}/${pboName}`;
         const commitMessage = `Add ${fileName}.v${dto.version}`;
 
-        const downloadUrl = await this.handleUpload(file, path, commitMessage);
+        const response = await this.handleUpload(file, path, commitMessage);
 
-        if (downloadUrl === '') this.logger.warn('Download URL is undefined');
+        if (response.downloadUrl === '')
+            this.logger.warn('Download URL of the uploaded file is empty');
+        if (response.sha === '')
+            this.logger.warn('SHA of the uploaded file is empty');
 
-        const { missionId, name, version, createdById, description } = dto;
+        const { missionId, version, createdById, description } = dto;
 
         return this.service.create({
             mission: {
@@ -105,14 +109,15 @@ export class MissionFileController extends AbstractController<
                     id: missionId,
                 },
             },
-            name,
+            name: fileName,
             version,
             createdBy: {
                 connect: {
                     id: createdById,
                 },
             },
-            downloadUrl: downloadUrl,
+            downloadUrl: response.downloadUrl,
+            sha: response.sha,
             path: path,
             description: description,
         });
@@ -132,9 +137,32 @@ export class MissionFileController extends AbstractController<
     @Delete(':id')
     @UseGuards(RoleGuard)
     @Role(UserRole.ADMIN)
-    override delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    override async delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
+        const target = (await this.service.get(id)) as any;
+        const path = target.path;
+        const commitMessage = `Delete ${path}`;
+
+        const request = {
+            owner: this.repositoryOwner,
+            repo: this.repositoryName,
+            path: path,
+            message: commitMessage,
+            committer: this.committer,
+            sha: target.sha,
+        };
+
+        try {
+            await this.octokit.rest.repos.deleteFile(request);
+
+            this.logger.log(`Deleted file from GitHub: { path: ${path} }`);
+        } catch (e) {
+            this.logger.error('Failed to delete mission file', e);
+            throw new InternalServerErrorException(
+                'Failed to delete mission file.',
+            );
+        }
+
         return this.service.delete(id);
-        // TODO: delete from repo
     }
 
     @Get(':id/download')
@@ -190,7 +218,7 @@ export class MissionFileController extends AbstractController<
         file: Express.Multer.File,
         path: string,
         commitMessage: string,
-    ): Promise<string> {
+    ): Promise<{ downloadUrl: string; sha: string }> {
         // Read and convert the uploaded file to base64 string
         const uploadedFilePath = join(process.cwd(), file.path);
         const uploadedFile = fs.readFileSync(uploadedFilePath);
@@ -222,13 +250,18 @@ export class MissionFileController extends AbstractController<
                 } }`,
             );
         } catch (e) {
-            this.logger.error('Failed to commit mission file');
+            this.logger.error('Failed to commit mission file', e);
             throw new BadRequestException('Failed to commit mission file.');
         } finally {
             this.cleanUp(uploadedFilePath);
         }
 
-        return response.data.content?.download_url ?? '';
+        const responseData = response.data.content;
+
+        return {
+            downloadUrl: responseData?.download_url ?? '',
+            sha: responseData?.sha ?? '',
+        };
     }
 
     private initRepository(): void {

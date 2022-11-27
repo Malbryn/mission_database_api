@@ -86,6 +86,7 @@ model MissionFile {
     name        String?  @db.VarChar(256)
     path        String?  @db.VarChar(256)
     downloadUrl String   @db.VarChar(256)
+    sha         String
     version     Int
     description String   @db.VarChar(512)
     createdAt   DateTime @default(now())

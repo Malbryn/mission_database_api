@@ -9,7 +9,7 @@ export class CreateMissionFileDto extends AbstractDto {
     missionId: number;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     name: string;
 
     @IsString()

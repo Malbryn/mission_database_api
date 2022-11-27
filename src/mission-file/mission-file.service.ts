@@ -19,6 +19,7 @@ export class MissionFileService extends AbstractService {
         downloadUrl: true,
         version: true,
         description: true,
+        sha: true,
         createdAt: true,
         ...this.relatedFields,
     };
