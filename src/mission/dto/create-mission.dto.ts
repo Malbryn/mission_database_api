@@ -42,7 +42,6 @@ export class CreateMissionDto extends AbstractDto {
     @IsNotEmpty()
     statusId: any;
 
-    // @Transform((value) => JSON.parse(value.obj.dlcs))
     @IsNumber({}, { each: true })
     @IsNotEmpty()
     dlcs: number[];
@@ -55,6 +54,10 @@ export class CreateMissionDto extends AbstractDto {
     @IsString()
     @IsNotEmpty()
     description: string;
+
+    @IsString()
+    @IsOptional()
+    notes: string;
 
     @Type(() => Number)
     @IsNumber()

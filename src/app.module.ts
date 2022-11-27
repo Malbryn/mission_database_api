@@ -11,6 +11,7 @@ import { ModsetModule } from './modset/modset.module';
 import { MissionModule } from './mission/mission.module';
 import { MissionFileModule } from './mission-file/mission-file.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { FrameworkModule } from './framework/framework.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { MulterModule } from '@nestjs/platform-express';
         ModsetModule,
         MissionModule,
         MissionFileModule,
+        FrameworkModule,
     ],
 })
 export class AppModule {}

@@ -70,6 +70,15 @@ model Modset {
     @@map("modsets")
 }
 
+model Framework {
+    id       Int       @id @default(autoincrement())
+    name     String    @db.VarChar(32)
+    link     String    @db.VarChar(256)
+    missions Mission[]
+
+    @@map("frameworks")
+}
+
 model MissionFile {
     id          Int      @id @default(autoincrement())
     missionId   Int?
@@ -101,7 +110,10 @@ model Mission {
     dlcs         MissionsOnDLCs[]
     modsetId     Int              @default(1)
     modset       Modset           @relation(fields: [modsetId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
+    frameworkId  Int              @default(1)
+    framework    Framework        @relation(fields: [frameworkId], references: [id], onUpdate: Cascade, onDelete: SetDefault)
     description  String           @db.VarChar(1024)
+    notes        String           @db.VarChar(1024)
     createdAt    DateTime         @default(now())
     createdById  Int?
     createdBy    User?            @relation(fields: [createdById], references: [id], onUpdate: Cascade, onDelete: SetNull)

@@ -12,6 +12,7 @@ export class MissionService extends AbstractService {
         gameType: true,
         status: true,
         modset: true,
+        framework: true,
         createdBy: true,
         missionFiles: true,
         dlcs: {
@@ -28,6 +29,7 @@ export class MissionService extends AbstractService {
         slotsMin: true,
         slotsMax: true,
         description: true,
+        notes: true,
         createdAt: true,
         ...this.relatedFields,
     };
@@ -90,6 +92,7 @@ export class MissionService extends AbstractService {
             'gameTypeId',
             'statusId',
             'modsetId',
+            'frameworkId',
             'createdById',
         ]);
 
@@ -137,6 +140,7 @@ export class MissionService extends AbstractService {
             'gameTypeId',
             'statusId',
             'modsetId',
+            'frameworkId',
             'createdById',
         ]);
 

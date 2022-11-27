@@ -50,6 +50,10 @@ export class UpdateMissionDto extends AbstractDto {
     @IsOptional()
     description?: string;
 
+    @IsString()
+    @IsOptional()
+    notes?: string;
+
     @Type(() => Number)
     @IsNumber()
     @IsOptional()
